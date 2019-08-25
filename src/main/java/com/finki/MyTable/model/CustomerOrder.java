@@ -26,6 +26,9 @@ public class CustomerOrder {
 
     public LocalDateTime dateTime;
 
+    @OneToMany(mappedBy = "customerOrder",  cascade = CascadeType.REMOVE, orphanRemoval = true)
+    public List<OrderedMenuItem> orderedMenuItems = new ArrayList<>();
+
 
     public boolean orderQuantityValidation(List<OrderedMenuItem> orderedItems){
         for (OrderedMenuItem orderedMenuItem : orderedItems) {

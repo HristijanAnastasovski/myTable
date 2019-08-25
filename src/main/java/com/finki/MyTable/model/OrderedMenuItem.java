@@ -1,5 +1,7 @@
 package com.finki.MyTable.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 
 @Entity
@@ -11,9 +13,11 @@ public class OrderedMenuItem {
     public Long id;
 
     @ManyToOne
+    @JsonIgnoreProperties("orderedMenuItems")
     public MenuItem menuItem;
 
     @ManyToOne
+    @JsonIgnoreProperties("orderedMenuItems")
     public CustomerOrder customerOrder;
 
     public int quantity;

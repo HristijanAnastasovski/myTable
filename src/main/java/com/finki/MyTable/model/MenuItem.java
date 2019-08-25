@@ -25,6 +25,9 @@ public class MenuItem {
     @ManyToOne
     public Restaurant restaurant;
 
+    @OneToMany(mappedBy = "menuItem", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    public List<OrderedMenuItem> orderedMenuItems = new ArrayList<>();
+
 
 
 }
