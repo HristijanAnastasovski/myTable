@@ -1,7 +1,6 @@
 package com.finki.MyTable.service.implementation;
 
 import com.finki.MyTable.model.Customer;
-import com.finki.MyTable.model.CustomerOrder;
 import com.finki.MyTable.model.exception.*;
 import com.finki.MyTable.model.factory.CustomerFactory;
 import com.finki.MyTable.repository.CustomerOrderRepository;
@@ -10,9 +9,6 @@ import com.finki.MyTable.service.CustomerManagementService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import sun.security.util.Password;
-
-import java.util.List;
 
 @Service
 public class CustomerManagementServiceImpl implements CustomerManagementService {
@@ -59,7 +55,6 @@ public class CustomerManagementServiceImpl implements CustomerManagementService 
     public void removeCustomer(Long id) throws UnknownCustomerException {
         Customer customer = customerRepository.findById(id).orElseThrow(UnknownCustomerException::new);
         customerRepository.delete(customer);
-
     }
 
 
