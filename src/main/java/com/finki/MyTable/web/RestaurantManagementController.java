@@ -95,7 +95,7 @@ public class RestaurantManagementController {
         restaurantManagementService.editItemFromRestaurantMenu(itemId, itemName, description, price,menuItemImage);
     }
 
-    @RequestMapping(value = "restaurant/menu/deleteItem", method=RequestMethod.POST)
+    @RequestMapping(value = "/restaurant/menu/deleteItem", method=RequestMethod.POST)
     public void removeMenuItem(@RequestParam("id") Long id) throws ItemNotFoundException {
         restaurantManagementService.removeItemFromRestaurantMenu(id);
     }

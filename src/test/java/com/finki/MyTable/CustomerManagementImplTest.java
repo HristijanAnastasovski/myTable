@@ -43,6 +43,14 @@ public class CustomerManagementImplTest {
         assertThat(registered.email).isEqualTo("mail@cc.com");
     }
 
+    @Test(expected = CustomerWithSameEmailExistsException.class)
+    public void whenRegisterNewCustomerSameEmail_thenThrowCustomerWithSameEmailExistsException() throws CustomerWithSameEmailExistsException {
+        Customer customer = CustomerFactory.create("firstname", "lastname", "mail@cc.com", "changed");
+        when(customerManagementService.registerNewCustomer("firstname", "lastname", "mail@cc.com", "changed")).thenThrow(CustomerWithSameEmailExistsException.class);
+
+        customerManagementService.registerNewCustomer("firstname", "lastname", "mail@cc.com", "changed");
+    }
+
     @Test
     public void whenChangeDetailsToCustomer_thenReturnChangedCustomer() throws UnknownCustomerException {
         Customer customer = CustomerFactory.create("firstname", "changed", "mail@cc.com", "changed");
@@ -64,6 +72,15 @@ public class CustomerManagementImplTest {
         assertThat(encoder.matches("changed", customer.password)).isTrue();
     }
 
+    @Test(expected = NoDifferenceInPasswordsException.class)
+    public void whenChangePasswordSamePassword_thenThrowNoDifferenceInPasswordException() throws UnknownCustomerException, NoDifferenceInPasswordsException {
+        Customer customer = CustomerFactory.create("firstname", "same", "mail@cc.com", "changed");
+        when(customerManagementService.changePassword(1L, "same")).thenThrow(new NoDifferenceInPasswordsException());
+
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        customerManagementService.changePassword(1L, "same");
+    }
+
     @Test
     public void whenGetCustomer_thenReturnCustomer() throws UnknownCustomerException {
         Customer customer = CustomerFactory.create("firstname", "changed", "mail@cc.com", "changed");
@@ -77,5 +94,11 @@ public class CustomerManagementImplTest {
     @Test
     public void whenRemoveCustomer_thenDoNothing() throws UnknownCustomerException {
         doNothing().when(customerManagementService).removeCustomer(1L);
+    }
+
+    @Test(expected = UnknownCustomerException.class)
+    public void whenRemoveNonExistingCustomer_thenThrowUnknownCustomerException() throws UnknownCustomerException {
+        doThrow(UnknownCustomerException.class).when(customerManagementService).removeCustomer(1L);
+        customerManagementService.removeCustomer(1L);
     }
 }

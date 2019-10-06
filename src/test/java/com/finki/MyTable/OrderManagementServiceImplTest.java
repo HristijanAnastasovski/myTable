@@ -81,6 +81,13 @@ public class OrderManagementServiceImplTest {
         assertThat(order).isNotNull();
     }
 
+    @Test(expected = QuantityException.class)
+    public void whenAddItemToOrderInvalidQuantity_thenThrowQuantityException() throws QuantityException, OrderNotFoundException, ItemNotFoundException {
+        when(orderManagementService.addItemToOrder(1L, 2L, 96796796)).thenThrow(QuantityException.class);
+
+        orderManagementService.addItemToOrder(1L, 2L, 96796796);
+    }
+
     @Test
     public void whenRemoveItemFromOrder_thenReturnOrderWithItemRemoved() throws ItemNotInOrderException, OrderNotFoundException, ItemNotFoundException {
         when(orderManagementService.removeItemFromOrder(1L, 1L)).thenReturn(this.customerOrder);
@@ -88,6 +95,13 @@ public class OrderManagementServiceImplTest {
         CustomerOrder order = orderManagementService.removeItemFromOrder(1L, 1L);
 
         assertThat(order.orderedMenuItems.size()).isEqualTo(0);
+    }
+
+    @Test(expected = OrderNotFoundException.class)
+    public void whenRemoveItemFromOrderNotExists_thenThrowOrderNotFoundException() throws ItemNotInOrderException, OrderNotFoundException, ItemNotFoundException {
+        when(orderManagementService.removeItemFromOrder(1L, 1L)).thenThrow(OrderNotFoundException.class);
+
+        orderManagementService.removeItemFromOrder(1L, 1L);
     }
 
     @Test
