@@ -1,9 +1,11 @@
 package com.finki.MyTable;
 
 import io.github.bonigarcia.wdm.ChromeDriverManager;
+import org.junit.runner.RunWith;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -14,17 +16,22 @@ public class SeleniumTest {
     private String orderTimeErrorMsg;
     private boolean successfulOrder;
     private boolean orderedItemsExist;
+    private boolean emptyMenuBefore;
+    private boolean emptyMenuAfter;
 
     @BeforeClass
     public void init() throws InterruptedException {
         ChromeDriverManager.getInstance().version("2.40").setup();
         driver = new ChromeDriver();
-
         driver.get("localhost:3000");
 
+        createOrderInit();
+        addMenuItemInit();
+
+    }
+
+    public void createOrderInit() throws InterruptedException{
         Thread.sleep(1000);
-
-
         WebElement signInCustomerBtn = driver.findElement(By.id("sign_in_customer"));
         signInCustomerBtn.click();
 
@@ -162,6 +169,78 @@ public class SeleniumTest {
             orderedItemsExist = false;
         }
 
+        WebElement dropdownMenuRestaurantBtn = driver.findElement(By.id("dropdownMenuRestaurantButton"));
+        dropdownMenuRestaurantBtn.click();
+
+        Thread.sleep(200);
+
+        WebElement signOutRestaurant = driver.findElement(By.id("sign_out_restaurant"));
+        signOutRestaurant.click();
+
+        Thread.sleep(1000);
+
+    }
+
+    public void addMenuItemInit() throws InterruptedException {
+        WebElement signInRestaurant = driver.findElement(By.id("sign_in_restaurant"));
+        signInRestaurant.click();
+
+        WebElement restaurantEmailInput = driver.findElement(By.id("restaurant_email_input"));
+        restaurantEmailInput.sendKeys("empty@gmail.com");
+
+        WebElement restaurantPasswordInput = driver.findElement(By.id("restaurant_password_input"));
+        restaurantPasswordInput.sendKeys("password");
+
+        WebElement restaurantSignInBtn = driver.findElement(By.id("restaurant_sign_in"));
+        restaurantSignInBtn.click();
+
+        Thread.sleep(1000);
+
+        try {
+            driver.findElement(By.className("restaurant_menu_items"));
+            emptyMenuBefore = false;
+        } catch (NoSuchElementException e) {
+            emptyMenuBefore = true;
+        }
+
+        Thread.sleep(1000);
+
+        WebElement addNewItemNavBarBtn = driver.findElement(By.id("add_new_item"));
+        addNewItemNavBarBtn.click();
+
+        Thread.sleep(200);
+
+        WebElement itemNameInput = driver.findElement(By.id("item_name_input"));
+
+        WebElement itemDescriptionInput = driver.findElement(By.id("item_description_input"));
+
+        WebElement itemPriceInput = driver.findElement(By.id("item_price_input"));
+
+        WebElement itemQuantityInput = driver.findElement(By.id("item_quantity_input"));
+
+        WebElement itemImageUrlInput = driver.findElement(By.id("item_image_url_input"));
+
+        itemNameInput.sendKeys("New item name");
+        itemDescriptionInput.sendKeys("New item description");
+        itemPriceInput.sendKeys("10");
+        itemQuantityInput.sendKeys("50");
+        itemImageUrlInput.sendKeys("https://cdn.popmenu.com/image/upload/c_limit,f_auto,h_1440,q_auto,w_1440/twave3pm189b1ezmkrkq.jpg");
+
+        Thread.sleep(200);
+
+        WebElement confirmNewItemBtn = driver.findElement(By.id("add_item_confirm"));
+        confirmNewItemBtn.click();
+
+        Thread.sleep(1000);
+
+        try {
+            driver.findElement(By.className("restaurant_menu_items"));
+            emptyMenuAfter = false;
+        } catch (NoSuchElementException e) {
+            emptyMenuAfter = true;
+        }
+
+
     }
 
 
@@ -180,6 +259,15 @@ public class SeleniumTest {
         Assert.assertTrue(orderedItemsExist);
     }
 
+    @Test
+    public void emptyMenuTest(){
+        Assert.assertTrue(emptyMenuBefore);
+    }
+
+    @Test
+    public void newItemInsertionTest(){
+        Assert.assertFalse(emptyMenuAfter);
+    }
 
 
 }
